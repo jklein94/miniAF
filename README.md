@@ -103,7 +103,7 @@ In addition, the SAT solver can also be parameterized. The specific parameters o
 Prints list of supported formats to the console
 
 ```
-$user ArgSolv --formats
+$user MiniAF --formats
 ```
 
 * **solver --problems**
@@ -111,13 +111,13 @@ $user ArgSolv --formats
 Prints list of supported computational problems to the console
 
 ```
-$user ArgSolv --problems
+$user MiniAF --problems
 ```
 
 
 
 ## Build
-Just run the *build.sh* script. This script installs the argumentation solver and all SAT solvers in the *SatSolvers.zip* file.
+Just run the *build.sh* script.
 
 
 
