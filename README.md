@@ -1,10 +1,15 @@
 # MiniAF
 
 ## Table of Contents
-1. [Input Formats](#input-formats)
-2. [Supported Problems and Semantics](#supported-problems-and-semantics)
-3. [Solver Interface](#solver-interface)
-4. [Build](#build)
+1. [System Overview](#system-overview)
+2. [Input Formats](#input-formats)
+3. [Supported Problems and Semantics](#supported-problems-and-semantics)
+4. [Solver Interface](#solver-interface)
+5. [Build](#build)
+
+## System Overview
+**MiniAF** is a SAT-based abstract argumentation solver. It's written in C and based von the **(j)ArgSemSat**[[1]](#1)[[2]](#2) approach.
+
 
 ## Input Formats
 
@@ -118,6 +123,25 @@ $user MiniAF --problems
 
 ## Build
 Just run the *build.sh* script.
+
+
+## References
+<a id="1">[1]</a> 
+Federico Cerutti, Massimiliano Giacomin, and Mauro Vallati.
+ArgSemSAT: solving argumentation problems using SAT. In Simon Parsons, Nir
+Oren, Chris Reed, and Federico Cerutti, editors, Proceedings of the 5th International
+Conference on Computational Models of Argument (COMMA 2014), volume 266 of
+Frontiers in Artificial Intelligence and Applications, pages 455–456. IOS Press, 2014.
+
+<a id="2">[2]</a> 
+Federico Cerutti, Mauro Vallati, and Massimiliano Giacomin.
+jArgSemSAT: an efficient off-the-shelf solver for abstract argumentation frameworks.
+In James P. Delgrande and Frank Wolter, editors, 15th International Conference on
+Principles of Knowledge Representation and Reasoning (KR2016), pages 541–544,
+2016.
+
+
+
 
 
 
