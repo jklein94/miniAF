@@ -8,8 +8,15 @@
 5. [Build](#build)
 
 ## System Overview
-**MiniAF** is a SAT-based abstract argumentation solver. It's written in C and based von the **(j)ArgSemSat**[[1]](#1)[[2]](#2) approach.
+**MiniAF** is a SAT-based abstract argumentation solver. It's written in C and based on the **(j)ArgSemSAT**[[1]](#1)[[2]](#2) approach. The general idea is to solve argumentation problems, by finding models of propositional formulas, with iterative calls to a SAT solver. 
+In principle, this task can be broken down into three subtasks: 1) Transforming the argumentation problem to a SAT problem; 2) Communication with an external SAT solver; and 3) Meaningful interpretation of the SAT solver output, with regard to the original argumentation problem.   
 
+Following this approach,  to solve any computational problem for a given semantics and abstract argumentation framework (AF), a propositional formula-which correspondes to a complete labelling-has to be identified. 
+Analogous to the three possible labels *in*, *out* and *undec*, each argument is represented by three boolean variables.  The resulting formula is in conjunctive normal form (CNF), as from SAT solvers required.
+
+To compute e.g. a complete extension this formula is passed to an external SAT solver, which checks if there is an assignment of the boolean variables, so that the formula evaluates to *True*. If there is no such assignment, there is no complete extension. However, if there is an assignment, each variable is assigned a label (in, out, undec) depending on its truth value. The set of variables declared as *in*, form a complete extension. In order to enumerate all complete extensions, the previous found model respectively labelling has to be excluded from the formula. This is achieved by appending the negation of the previous found labelling. The modified formula is then passed back to the SAT solver. This procedure is repeated until the formula is no longer satisfiable, i.e. no further labelling can be found. In this way, all extensions are enumerated.
+
+The computation of stable extensions or rather stable labellings works basicly the same way. ...
 
 ## Input Formats
 
@@ -59,7 +66,7 @@ For every semantics the solver solves four different problems:
 * **Credulously accepted (DC)**
 * **Skeptical accepted (DS)**
 
-## Solver Interface and useage
+## Solver Interface
 
 The solver is runnable from a command line and provides all behaviors described here: https://www.iccma2019.dmi.unipg.it/res/SolverRequirements.pdf (Chapter 7)
 
@@ -118,7 +125,6 @@ Prints list of supported computational problems to the console
 ```
 $user MiniAF --problems
 ```
-
 
 
 ## Build
