@@ -9,6 +9,7 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include "Util.h"
+#include <sys/resource.h>
 
 #define max(a,b) \
    ({ __typeof__ (a) _a = (a); \
@@ -16,6 +17,36 @@
      _a > _b ? _a : _b; })
 
 #define BUFSIZE 128
+
+
+
+
+
+void read_off_memory_status(statm_t * result){
+  unsigned long dummy;
+  const char* statm_path = "/proc/self/statm";
+
+  FILE *f = fopen(statm_path,"r");
+  printf("open\n");
+  if(!f){
+	printf("Cant open");
+    perror(statm_path);
+    abort();
+  }
+  if(7 != fscanf(f,"%ld %ld %ld %ld %ld %ld %ld",
+    &result->size,&result->resident,&result->share,&result->text,&result->lib,&result->data,&result->dt))
+  {
+    perror(statm_path);
+    abort();
+  }
+
+  printf("Data:%ld\n", &result->data);
+  fclose(f);
+}
+
+
+
+
 
 void semantics_getCompleteConstraints(struct AF * current_framework) {
 
@@ -141,8 +172,7 @@ void complete_getAllExtensions(struct AF* framework,
 	int total_number_arguments = framework->argument_names.total;
 
 	struct SAT_Input input;
-	util_initInput(&input, &framework->complete_constraints,
-			total_number_arguments);
+	util_initInput(&input, &framework->complete_constraints,total_number_arguments);
 
 	char * cnf_dimacs = util_getCombinedInput(&input);
 
@@ -186,8 +216,7 @@ void complete_getAllExtensions(struct AF* framework,
 		cnf_dimacs = util_getCombinedInput(&input);
 	}
 
-	util_printAllExtension(&framework->result_extensions,
-			&framework->argument_names);
+	util_printAllExtension(&framework->result_extensions,&framework->argument_names);
 
 	free(output_model);
 	free(input.body);
@@ -336,12 +365,14 @@ bool preferred_getAllExtensions(struct AF * framework,
 
 	int * output_model = malloc(total_number_arguments * 3 * sizeof(int));
 
+	struct SAT_Input  cnfdf_input;
+
 	while (true) {
 
 		Labels* preferred = malloc(sizeof(Labels));
 		labels_init(preferred);
 
-		struct SAT_Input cnfdf_input;
+
 
 		cnfdf_input.body_length = input.body_length;
 		cnfdf_input.header_length = input.header_length;
@@ -357,18 +388,18 @@ bool preferred_getAllExtensions(struct AF * framework,
 		while (true) {
 
 			char * cnfdf_temp = util_getCombinedInput(&cnfdf_input);
-
 			if (!util_callExternalSatSolver(cnfdf_temp, output_model,
 					run_props)) {
 				break;
 			}
+
+			labels_destroy(preferred);
 			free(cnfdf_temp);
 			free(cnfdf_input.header);
 			Labels* resultLabels = malloc(sizeof(Labels));
 			labels_init(resultLabels);
 
-			labels_assignLabelsFromSatModel(resultLabels, output_model,
-					&framework->argument_names);
+			labels_assignLabelsFromSatModel(resultLabels, output_model,&framework->argument_names);
 
 			preferred = labels_clone(resultLabels);
 			bool isUndecEmpty = isEmpty(resultLabels->undecLabels);
@@ -434,11 +465,19 @@ bool preferred_getAllExtensions(struct AF * framework,
 
 			util_updateInput(&input, rest, false);
 
+            // clean up
 			vector_free(rest);
+
+			for(int i = 0; i < cnfdf_new_clause->total;++i){
+
+				vector_free(cnfdf_new_clause->items[i]);
+			}
 			vector_free(cnfdf_new_clause);
+
 			labels_destroy(resultLabels);
 
-			cnfdf_temp = util_getCombinedInput(&cnfdf_input);
+
+			//cnfdf_temp = util_getCombinedInput(&cnfdf_input);
 
 			if (isUndecEmpty) {
 				break;
@@ -559,8 +598,8 @@ bool complete_getSomeExtension(struct AF* framework,
 	return false;
 }
 
-bool grounded_getSomeExtension(struct AF * framework,
-		struct RunProperties * run_props) {
+bool grounded_getSomeExtension(struct AF * framework,struct RunProperties * run_props) {
+
 	grounded_getAllExtensions(framework, run_props);
 
 	vector* res = framework->result_extensions.items[0];

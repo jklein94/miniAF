@@ -13,6 +13,12 @@
 #include <stdbool.h>
 #include "Util.h"
 
+typedef struct {
+    long size,resident,share,text,lib,data,dt;
+} statm_t;
+
+void read_off_memory_status(statm_t *result);
+
 void semantics_getCompleteConstraints(struct AF * current_framework);
 
 void stable_getAllExtensions(struct AF* framework,struct RunProperties* run_props);

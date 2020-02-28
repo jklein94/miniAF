@@ -231,6 +231,9 @@ bool util_extractModel(FILE * solver_output, int * sat_model){
 			int status = 0;
 			size_t *t = malloc(0);
 
+			char * next = NULL;
+			char * pch = NULL;
+
 
 			while ((status=getline(curLine,t,solver_output)) > 0) {
 
@@ -256,8 +259,7 @@ bool util_extractModel(FILE * solver_output, int * sat_model){
 
 			    if(resultSection){
 
-				char * next = NULL;
-				char * pch = strtok_r(*curLine, " ", &next);	// Split line by whitespace
+				pch = strtok_r(*curLine, " ", &next);	// Split line by whitespace
 				if (*curLine[0] == 'v') {
 					pch = strtok_r(NULL, " ", &next);// second call to get rid of "v" in the beginning of each line
 				}
